@@ -1,7 +1,7 @@
 # READ ME
-## The Lol Operating System
+## The LoL Operating System
 
-Here, Lol stands for "Liam's Os named Lol." Lol is a custom made operating system, based on Linux, but influenced by my historical use of Windows. 
+LoL stands for "Liam's Os named LoL." Lol is a custom made operating system, based on Linux, but influenced by my personal use of Windows. 
 
 Mostly, this project is to teach myself the basics of operating systems, Assembly, and improve my skills in C.
 
