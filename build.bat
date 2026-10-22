@@ -1,7 +1,7 @@
 @echo off
 echo Building...
 
-nasm -f bin src/boot/boot_sector.asm -o build/bootloader.bin
+nasm -f bin src/boot/boot.asm -o build/bootloader.bin
 
 cd build
 
