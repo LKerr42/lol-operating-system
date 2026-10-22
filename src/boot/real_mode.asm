@@ -1,12 +1,10 @@
-ORG 0x7E00  
-
 mmap_entry_count equ 0x0500
 CODE_SEG equ gdt_code - gdt_start
 DATA_SEG equ gdt_data - gdt_start
 
-main:
+real_mode_main:
     mov si, welcome_message
-    call print_string
+    call bios_print_string
 
     call obtain_smap
     call display_smap
@@ -23,7 +21,7 @@ main:
     mov cr0, eax
 
     ; finally jump into 32-bit mode
-    jmp CODE_SEG:start_protected_mode
+    jmp CODE_SEG:protected_mode_main
 
     .hang:
         hlt
@@ -76,12 +74,12 @@ check_a20:
         jmp check_a20
     .error:
         mov si, a20_error_msg
-        call print_string
+        call bios_print_string
         jmp .a20_f
     .a20_f:
         ; check bit
         in al, 0x92
-        call print_formatted_hex
+        call bios_print_formatted_hex
 
         pop si
         pop di
@@ -93,7 +91,7 @@ check_a20:
 display_smap:
     pusha
     mov si, memory_map_msg
-    call print_string
+    call bios_print_string
     mov di, 0x5000
     mov cx, [mmap_entry_count]
 print_entries:
@@ -101,23 +99,23 @@ print_entries:
     je end_display_smap
 
     mov si, base_address_msg
-    call print_string
+    call bios_print_string
     mov eax, [es:di + 4]
-    call print_hex
+    call bios_print_hex
     mov eax, [es:di]
-    call print_hex
+    call bios_print_hex
 
     mov si, length_of_region_msg
-    call print_string
+    call bios_print_string
     mov eax, [es:di + 12]
-    call print_hex
+    call bios_print_hex
     mov eax, [es:di + 8]
-    call print_hex
+    call bios_print_hex
 
     mov si, type_msg
-    call print_string
+    call bios_print_string
     mov eax, [es:di + 16]
-    call print_hex
+    call bios_print_hex
 
     add di, 24
     dec cx
@@ -186,13 +184,13 @@ obtain_smap:
         ret
     .failed: 
         mov si, smap_error_msg
-        call print_string
+        call bios_print_string
 
         popa
         stc
         ret
 
-print_string:  
+bios_print_string:  
     .loop:
         ; put char into al and test if its the null terminator
         mov al, [si]
@@ -212,38 +210,38 @@ print_string:
     .done:
         ret
 
-print_formatted_hex:
+bios_print_formatted_hex:
     mov si, hex_begin_str
-    call print_string
+    call bios_print_string
 
-    call print_hex
+    call bios_print_hex
 
     mov si, newline_str
-    call print_string
+    call bios_print_string
 
     ret
 
-print_hex:
+bios_print_hex:
     pusha
 
     mov ecx, 8
     mov ebx, eax
 
-    print_hex_loop:
+    bios_print_hex_loop:
         rol ebx, 4
         mov al, bl
         and al, 0x0F
         cmp al, 10
         jl print_digit
         add al, 'A' - 10
-        jmp print_hex_digit
+        jmp bios_print_hex_digit
 
     print_digit:
         add al, '0'
-    print_hex_digit:
+    bios_print_hex_digit:
         mov ah, 0x0E
         int 0x10
-        loop print_hex_loop
+        loop bios_print_hex_loop
 
         popa
         ret
@@ -256,36 +254,4 @@ length_of_region_msg: db ' Length of region: ', 0
 smap_error_msg: db "smap_error!", 0xA, 0xD, 0
 a20_error_msg: db "a20_error!", 0xA, 0xD, 0
 hex_begin_str: db "0x", 0
-newline_str: db 0x0D, 0x0A, 0
-
-; gdt must be at the end of real mode
-
-gdt_start:
-    gdt_null:
-        dq 0
-    gdt_code:
-        dw 0xFFFF
-        dw 0
-        db 0
-        db 0b10011010
-        ; p,p,t, type flags
-        db 0b11001111
-        ; other + limit
-        db 0
-    gdt_data:
-        dw 0xFFFF
-        dw 0
-        db 0
-        db 0b10010010
-         ; p,p,t, type flags
-        db 0b11001111
-         ; other + limit
-        db 0
-gdt_end:
-
-gdt_descriptor:
-    dw gdt_end - gdt_start - 1
-    dd gdt_start
-
-; protected mode will immediately follow this file
-start_protected_mode:
+newline_str: db 0x0D, 0x0A, 0   

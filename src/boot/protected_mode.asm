@@ -1,43 +1,44 @@
 [bits 32]
 
-; PRINT_DEST_BASE equ 0xb8000 
+protected_mode_main:
+    mov ax, DATA_SEG
+	mov ds, ax
+	mov ss, ax
+	mov es, ax
+	mov fs, ax
+	mov gs, ax
+	
+	mov ebp, 0x90000		; 32 bit stack base pointer
+	mov esp, ebp
 
-jmp main
-
-main:
-    mov bx, 0xb8000
-
-    ;print a character
-    mov al, 'A'
-    mov ah, 0x0f
-    mov [0xb8000], ax
-
-    mov si, welcome_message
-    call print_string
+    mov esi, load_message
+    call pm_print_string
 
     .hang:
         hlt
         jmp .hang
 
-print_string:  
+pm_print_string:  
+    pusha
+    mov edi, 0xB8000
+    mov ah, 0x0F
+
     .loop:
         ; put char into al and test if its the null terminator
-        mov al, [si]
-        test al, al
-
-        jz .done
+        mov al, [esi]
+        cmp al, 0
+        je .done
 
         ; send char at location stored in si to screen  
-        mov ah, 0x0f
-        mov [bx], ax
+        mov [edi], ax
 
         ; increment si and bx
-        inc si
-        inc bx
+        inc esi
+        add edi, 2
 
         jmp .loop
-
     .done:
+        popa
         ret
 
-welcome_message: db "Loaded protected mode...", 0
+load_message: db "Loaded protected mode...", 0

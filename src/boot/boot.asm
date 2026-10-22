@@ -46,3 +46,7 @@ disc_error:
 times 510-($-$$) db 0   
 
 dw 0xAA55
+
+%include "src/boot/real_mode.asm"
+%include "src/boot/gdt.asm"
+%include "src/boot/protected_mode.asm"
