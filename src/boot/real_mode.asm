@@ -1,6 +1,8 @@
 ORG 0x7E00  
 
 mmap_entry_count equ 0x0500
+CODE_SEG equ gdt_code - gdt_start
+DATA_SEG equ gdt_data - gdt_start
 
 main:
     mov si, welcome_message
@@ -10,6 +12,18 @@ main:
     call display_smap
 
     call check_a20
+
+    ; load GDT
+    cli
+    lgdt [gdt_descriptor]
+
+    ; set cr0 to 1
+    mov eax, cr0
+    or eax, 1
+    mov cr0, eax
+
+    ; finally jump into 32-bit mode
+    jmp CODE_SEG:start_protected_mode
 
     .hang:
         hlt
@@ -243,3 +257,35 @@ smap_error_msg: db "smap_error!", 0xA, 0xD, 0
 a20_error_msg: db "a20_error!", 0xA, 0xD, 0
 hex_begin_str: db "0x", 0
 newline_str: db 0x0D, 0x0A, 0
+
+; gdt must be at the end of real mode
+
+gdt_start:
+    gdt_null:
+        dq 0
+    gdt_code:
+        dw 0xFFFF
+        dw 0
+        db 0
+        db 0b10011010
+        ; p,p,t, type flags
+        db 0b11001111
+        ; other + limit
+        db 0
+    gdt_data:
+        dw 0xFFFF
+        dw 0
+        db 0
+        db 0b10010010
+         ; p,p,t, type flags
+        db 0b11001111
+         ; other + limit
+        db 0
+gdt_end:
+
+gdt_descriptor:
+    dw gdt_end - gdt_start - 1
+    dd gdt_start
+
+; protected mode will immediately follow this file
+start_protected_mode:
