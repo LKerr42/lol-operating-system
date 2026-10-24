@@ -29,10 +29,10 @@ pm_print_string:
         cmp al, 0
         je .done
 
-        ; send char at location stored in si to screen  
+        ; send char at location stored in edi to screen  
         mov [edi], ax
 
-        ; increment si and bx
+        ; increment esi and edi
         inc esi
         add edi, 2
 
