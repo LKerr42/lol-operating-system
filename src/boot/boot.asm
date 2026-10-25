@@ -8,3 +8,4 @@ ORG 0x7C00
 %include "src/boot/real_mode.asm"
 %include "src/boot/gdt.asm"
 %include "src/boot/protected_mode.asm"
+%include "src/boot/long_mode.asm"

@@ -10,7 +10,7 @@ gdt_start:
         db 0b11001111
         ; other + limit
         db 0
-    gdt_data:
+    gdt_data_32:
         dw 0xFFFF
         dw 0
         db 0
@@ -21,6 +21,7 @@ gdt_start:
         db 0
     gdt_code_64:
         dq 0x00209A0000000000             ; 64-bit code descriptor (exec/read).
+    gdt_data_64:
         dq 0x0000920000000000             ; 64-bit data descriptor (read/write).
 gdt_end:
 

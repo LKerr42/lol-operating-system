@@ -1,6 +1,6 @@
 mmap_entry_count equ 0x0500
-CODE_SEG equ gdt_code_32 - gdt_start
-DATA_SEG equ gdt_data - gdt_start
+CODE_SEG_32 equ gdt_code_32 - gdt_start
+DATA_SEG_32 equ gdt_data_32 - gdt_start
 
 real_mode_main:
     mov si, welcome_message
@@ -21,7 +21,7 @@ real_mode_main:
     mov cr0, eax
 
     ; finally jump into 32-bit mode
-    jmp CODE_SEG:protected_mode_main
+    jmp CODE_SEG_32:protected_mode_main
 
     .hang:
         hlt
