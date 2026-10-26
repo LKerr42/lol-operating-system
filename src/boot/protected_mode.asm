@@ -104,7 +104,7 @@ protected_mode_main:
     cli 
     ; lgdt [gdt_descriptor]
 
-    jmp CODE_SEG_64:long_mode_main
+    jmp CODE_SEG_64:_long_mode_main
 
     .hang:
         hlt
