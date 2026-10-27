@@ -24,7 +24,7 @@ EFER_LM_ENABLE equ 1 << 8
 CODE_SEG_64 equ gdt_code_64 - gdt_start
 DATA_SEG_64 equ gdt_data_64 - gdt_start
 
-protected_mode_main:
+_protected_mode_main:
     mov ax, DATA_SEG_32
 	mov ds, ax
 	mov ss, ax
@@ -38,16 +38,11 @@ protected_mode_main:
     mov edi, 0xB8000 ; set printing dest
 
     mov esi, load_message
-    call print_string
-    call cursor_to_newline
+    call print_string_32
 
     call cpuid_check
 
     call set_pages
-
-    mov esi, msg_page
-    call print_string
-    call cursor_to_newline
 
     ; finally, move to long mode
 
@@ -55,10 +50,6 @@ protected_mode_main:
     mov al, 0xFF
     out 0xA1, al
     out 0x21, al
-
-    mov esi, msg_IRQs
-    call print_string
-    call cursor_to_newline
 
     nop
     nop
@@ -77,10 +68,6 @@ protected_mode_main:
 
     pop edi
 
-    mov esi, msg_PAE
-    call print_string
-    call cursor_to_newline
-
     ; read from the EFER MSR
     mov ecx, EFER_MSR
     rdmsr
@@ -89,26 +76,15 @@ protected_mode_main:
     or eax, EFER_LM_ENABLE
     wrmsr
 
-    mov esi, msg_LME
-    call print_string
-    call cursor_to_newline
-
     mov eax, cr0
     or eax, 0x80000001
     mov cr0, eax
 
-    mov esi, msg_jump
-    call print_string
-    call cursor_to_newline
-
     cli 
-    ; lgdt [gdt_descriptor]
 
     jmp CODE_SEG_64:_long_mode_main
 
-    .hang:
-        hlt
-        jmp .hang
+    jmp $
 
 set_pages:
     push edi
@@ -188,14 +164,16 @@ cpuid_check:
         jz .no_long_mode
 
         mov esi, cpuid_msg
-        call print_string
-        call cursor_to_newline
+        call print_string_32
 
         ret
     .no_long_mode:
+        mov esi, cpuid_fail_msg
+        call print_string_32
+        
         jmp $
 
-print_string:  
+print_string_32:  
     ; pusha
     push ax
     mov ah, 0x0F
@@ -206,42 +184,47 @@ print_string:
         cmp al, 0
         je .done
 
+        ; test for newline
+        cmp al, 0x0A
+        je .newline
+
         ; send char at location stored in edi to screen  
         mov [edi], ax
-
+    
+    .increment:
         ; increment esi and edi
         inc esi
         add edi, 2
 
         jmp .loop
+    .newline:
+        push eax
+        push ebx
+        push edx
+        
+        xor edx, edx
+        mov eax, edi
+        sub eax, 0xB8000
+        mov ebx, 160
+
+        div ebx
+
+        mov eax, 160
+
+        sub eax, edx
+
+        add edi, eax
+
+        pop edx
+        pop ebx
+        pop eax
+
+        jmp .increment
     .done:
         ; popa
         pop ax
         ret
 
-cursor_to_newline:
-    push eax
-    push ebx
-    push edx
-    
-    xor edx, edx
-    mov eax, edi
-    sub eax, 0xB8000
-    mov ebx, 160
-
-    div ebx
-
-    mov eax, 160
-
-    sub eax, edx
-
-    add edi, eax
-
-    pop edx
-    pop ebx
-    pop eax
-
-    ret
 
 IDT:
     .Length:       dw 0
@@ -249,8 +232,4 @@ IDT:
 
 load_message: db "Loaded protected mode...", 0
 cpuid_msg: db "Long mode is supported", 0
-msg_page: db "pages created ", 0
-msg_PAE: db "PAE enabled ", 0
-msg_IRQs: db "IRQs disabled ", 0
-msg_LME: db "EFER LME enabled ", 0
-msg_jump: db "about to jump ", 0
+cpuid_fail_msg: db "Long mode is not supported!", 0

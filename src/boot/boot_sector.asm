@@ -29,16 +29,21 @@ start:
     int 0x13
     jc disc_error
 
-    jmp 0x7E00
+    jmp _real_mode_main
+
+    jmp $
 
 disc_error:
-    mov ah, 0x0E
-    mov al, 'E'
-    int 0x10
+    ; mov ah, 0x0E
+    ; mov al, 'E'
+    ; int 0x10
 
-    .hang:
-        hlt
-        jmp .hang
+    mov si, error_msg
+    call print_string_bios
+
+    jmp $
+
+error_msg: db "Disc error! No additonal sectors loaded", 0
 
 times 510-($-$$) db 0   
 

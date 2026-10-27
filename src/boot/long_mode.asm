@@ -1,7 +1,7 @@
 [bits 64]
 
 section .data
-    hello_msg: db "Hello, Long Mode!", 0
+    hello_msg: db "Hello, Long Mode!", 0x0A, 0
     cursor_pos: dw 0
 
 section .text

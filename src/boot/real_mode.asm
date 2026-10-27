@@ -2,9 +2,9 @@ mmap_entry_count equ 0x0500
 CODE_SEG_32 equ gdt_code_32 - gdt_start
 DATA_SEG_32 equ gdt_data_32 - gdt_start
 
-real_mode_main:
+_real_mode_main:
     mov si, welcome_message
-    call bios_print_string
+    call print_string_bios
 
     call obtain_smap
     call display_smap
@@ -21,11 +21,9 @@ real_mode_main:
     mov cr0, eax
 
     ; finally jump into 32-bit mode
-    jmp CODE_SEG_32:protected_mode_main
+    jmp CODE_SEG_32:_protected_mode_main
 
-    .hang:
-        hlt
-        jmp .hang
+    jmp $
 
 check_a20:
     pushf
@@ -74,13 +72,9 @@ check_a20:
         jmp check_a20
     .error:
         mov si, a20_error_msg
-        call bios_print_string
+        call print_string_bios
         jmp .a20_f
     .a20_f:
-        ; check bit
-        in al, 0x92
-        call bios_print_formatted_hex
-
         pop si
         pop di
         pop es
@@ -91,7 +85,7 @@ check_a20:
 display_smap:
     pusha
     mov si, memory_map_msg
-    call bios_print_string
+    call print_string_bios
     mov di, 0x5000
     mov cx, [mmap_entry_count]
 print_entries:
@@ -99,23 +93,23 @@ print_entries:
     je end_display_smap
 
     mov si, base_address_msg
-    call bios_print_string
+    call print_string_bios
     mov eax, [es:di + 4]
-    call bios_print_hex
+    call print_hex_bios
     mov eax, [es:di]
-    call bios_print_hex
+    call print_hex_bios
 
     mov si, length_of_region_msg
-    call bios_print_string
+    call print_string_bios
     mov eax, [es:di + 12]
-    call bios_print_hex
+    call print_hex_bios
     mov eax, [es:di + 8]
-    call bios_print_hex
+    call print_hex_bios
 
     mov si, type_msg
-    call bios_print_string
+    call print_string_bios
     mov eax, [es:di + 16]
-    call bios_print_hex
+    call print_hex_bios
 
     add di, 24
     dec cx
@@ -184,13 +178,13 @@ obtain_smap:
         ret
     .failed: 
         mov si, smap_error_msg
-        call bios_print_string
+        call print_string_bios
 
         popa
         stc
         ret
 
-bios_print_string:  
+print_string_bios:  
     .loop:
         ; put char into al and test if its the null terminator
         mov al, [si]
@@ -210,38 +204,26 @@ bios_print_string:
     .done:
         ret
 
-bios_print_formatted_hex:
-    mov si, hex_begin_str
-    call bios_print_string
-
-    call bios_print_hex
-
-    mov si, newline_str
-    call bios_print_string
-
-    ret
-
-bios_print_hex:
+print_hex_bios:
     pusha
 
     mov ecx, 8
     mov ebx, eax
 
-    bios_print_hex_loop:
+    print_hex_bios_loop:
         rol ebx, 4
         mov al, bl
         and al, 0x0F
         cmp al, 10
         jl print_digit
         add al, 'A' - 10
-        jmp bios_print_hex_digit
-
+        jmp print_hex_digit_bios
     print_digit:
         add al, '0'
-    bios_print_hex_digit:
+    print_hex_digit_bios:
         mov ah, 0x0E
         int 0x10
-        loop bios_print_hex_loop
+        loop print_hex_bios_loop
 
         popa
         ret
@@ -253,5 +235,3 @@ type_msg: db ' Type: ', 0
 length_of_region_msg: db ' Length of region: ', 0
 smap_error_msg: db "smap_error!", 0xA, 0xD, 0
 a20_error_msg: db "a20_error!", 0xA, 0xD, 0
-hex_begin_str: db "0x", 0
-newline_str: db 0x0D, 0x0A, 0   
