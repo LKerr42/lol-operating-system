@@ -1,6 +1,11 @@
-mmap_entry_count equ 0x0500
-CODE_SEG_32 equ gdt_code_32 - gdt_start
-DATA_SEG_32 equ gdt_data_32 - gdt_start
+CODE_SEG_32         equ gdt_code_32 - gdt_start
+DATA_SEG_32         equ gdt_data_32 - gdt_start
+
+MEMORY_MAP_ADDR     equ 0x5000
+MEMORY_MAP_COUNT    equ 0x0500
+
+KERNEL_LOAD_ADDR    equ 0x100000
+KERNEL_SIZE         equ 0x40000
 
 _real_mode_main:
     mov si, welcome_message
@@ -86,8 +91,8 @@ display_smap:
     pusha
     mov si, memory_map_msg
     call print_string_bios
-    mov di, 0x5000
-    mov cx, [mmap_entry_count]
+    mov di, MEMORY_MAP_ADDR
+    mov cx, [MEMORY_MAP_COUNT]
 print_entries:
     cmp cx, 0
     je end_display_smap
@@ -124,7 +129,7 @@ obtain_smap:
     ; set dest
     xor ax, ax
     mov es, ax
-    mov di, 0x5000
+    mov di, MEMORY_MAP_ADDR
 
     ; set parameters
     xor ebx, ebx
@@ -171,7 +176,7 @@ obtain_smap:
         jne .e8201p
 
     .e820f:
-        mov [mmap_entry_count], bp
+        mov [MEMORY_MAP_COUNT], bp
 
         popa
         clc

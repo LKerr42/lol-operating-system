@@ -1,5 +1,7 @@
 [bits 64]
 
+BOOT_INFO_ADDR      equ 0x6000
+
 section .data
     hello_msg: db "Hello, Long Mode!", 0x0A, 0
     cursor_pos: dw 0
@@ -40,7 +42,20 @@ _long_mode_main:
     mov rsi, hello_msg
     call print_string_64
 
+    call populate_boot_info
+
     jmp $
+
+populate_boot_info:
+    mov qword [BOOT_INFO_ADDR + 8], MEMORY_MAP_ADDR
+
+    mov qword [BOOT_INFO_ADDR + 16], MEMORY_MAP_COUNT
+
+    mov qword [BOOT_INFO_ADDR + 24], KERNEL_LOAD_ADDR
+
+    mov qword [BOOT_INFO_ADDR + 32], KERNEL_SIZE
+
+    ret
 
 print_string_64:
     movzx rdi, word [cursor_pos]

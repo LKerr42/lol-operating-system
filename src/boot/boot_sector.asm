@@ -1,3 +1,5 @@
+[bits 16]
+
 start:
     cli
 
@@ -16,6 +18,9 @@ start:
     xor ax, ax
     mov es, ax
     mov bx, 0x7E00
+
+    ; store boot drive info
+    mov [BOOT_INFO_ADDR], dl
 
     ; set parameters 
     ; (in order: read sector function, sectors, cylinder, start sector, head)
