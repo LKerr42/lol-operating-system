@@ -1,28 +1,31 @@
 [bits 32]
 
-SIZEOF_PAGE_TABLE equ 4096
+SIZEOF_PAGE_TABLE   equ 4096
 
-PML4T_ADDR equ 0x1000
-PDPT_ADDR equ 0x2000
-PDT_ADDR equ 0x3000
-PT_ADDR equ 0x4000
+PML4T_ADDR          equ 0x1000
+PDPT_ADDR           equ 0x2000
+PDT_ADDR            equ 0x3000
+PT_ADDR             equ 0x4000
 
 ; the page table only uses certain parts of the actual address
-PT_ADDR_MASK equ 0xFFFFF000
-PT_PRESENT equ 1                 ; marks the entry as in use
-PT_READABLE equ 2                ; marks the entry as r/w
+PT_ADDR_MASK        equ 0xFFFFF000
+PT_PRESENT          equ 1           ; marks the entry as in use
+PT_READABLE         equ 2           ; marks the entry as r/w
 
-ENTRIES_PER_PT equ 512
-SIZEOF_PT_ENTRY equ 8
-PAGE_SIZE equ 0x1000
+ENTRIES_PER_PT      equ 512
+SIZEOF_PT_ENTRY     equ 8
+PAGE_SIZE           equ 0x1000
 
-CR4_PAE_ENABLE equ 1 << 5
+HUGE_PAGE_SIZE      equ 0x200000
+PT_HUGE             equ 1 << 7
 
-EFER_MSR equ 0xC0000080
-EFER_LM_ENABLE equ 1 << 8
+CR4_PAE_ENABLE      equ 1 << 5
 
-CODE_SEG_64 equ gdt_code_64 - gdt_start
-DATA_SEG_64 equ gdt_data_64 - gdt_start
+EFER_MSR            equ 0xC0000080
+EFER_LM_ENABLE      equ 1 << 8
+
+CODE_SEG_64         equ gdt_code_64 - gdt_start
+DATA_SEG_64         equ gdt_data_64 - gdt_start
 
 _protected_mode_main:
     mov ax, DATA_SEG_32
@@ -63,8 +66,8 @@ _protected_mode_main:
 
     push edi
 
-    mov edi, PML4T_ADDR
-    mov cr3, edi
+    ; mov edi, PML4T_ADDR
+    ; mov cr3, edi
 
     pop edi
 
@@ -94,7 +97,7 @@ set_pages:
     mov cr3, edi
 
     xor eax, eax
-    mov ecx, (SIZEOF_PAGE_TABLE * 4) / 4
+    mov ecx, (SIZEOF_PAGE_TABLE * 3) / 4
 
     cld
     rep stosd
@@ -108,18 +111,15 @@ set_pages:
     mov edi, PDPT_ADDR
     mov DWORD [edi], PDT_ADDR & PT_ADDR_MASK | PT_PRESENT | PT_READABLE
 
-    ; PDT[0] -> PT
+    ; Fill PDT
     mov edi, PDT_ADDR
-    mov DWORD [edi], PT_ADDR & PT_ADDR_MASK | PT_PRESENT | PT_READABLE
-
-    ; Fill PT
-    mov edi, PT_ADDR
-    mov ebx, PT_PRESENT | PT_READABLE
-    mov ecx, ENTRIES_PER_PT
+    mov ebx, PT_PRESENT | PT_READABLE | PT_HUGE
+    ; mov ecx, ENTRIES_PER_PT
+    mov ecx, 8 ; identity-map 16 MiB to start
 
     .set_entry:
         mov DWORD [edi], ebx
-        add ebx, PAGE_SIZE
+        add ebx, HUGE_PAGE_SIZE
         add edi, SIZEOF_PT_ENTRY
         loop .set_entry
 
@@ -230,6 +230,6 @@ IDT:
     .Length:       dw 0
     .Base:         dd 0
 
-load_message: db "Loaded protected mode...", 0
-cpuid_msg: db "Long mode is supported", 0
-cpuid_fail_msg: db "Long mode is not supported!", 0
+load_message: db "Loaded protected mode...", 0x0A, 0
+cpuid_msg: db "Long mode is supported", 0x0A, 0
+cpuid_fail_msg: db "Long mode is not supported!", 0x0A, 0
