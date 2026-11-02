@@ -10,3 +10,4 @@ ORG 0x7C00
 
 ; stage three, prepare for kernel
 %include "src/boot/long_mode.asm"
+%include "src/boot/kernel_entry.asm"

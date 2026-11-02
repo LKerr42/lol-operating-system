@@ -25,7 +25,7 @@ start:
     ; set parameters 
     ; (in order: read sector function, sectors, cylinder, start sector, head)
     mov ah, 0x02
-    mov al, 16
+    mov al, 3
     mov ch, 0
     mov cl, 2
     mov dh, 0
@@ -47,6 +47,26 @@ disc_error:
     call print_string_bios
 
     jmp $
+
+print_string_bios:  
+    .loop:
+        ; put char into al and test if its the null terminator
+        mov al, [si]
+        test al, al
+
+        jz .done
+
+        ; send char at location stored in si to bios screen  
+        mov ah, 0x0E
+        int 0x10
+
+        ; increment si
+        inc si
+
+        jmp .loop
+
+    .done:
+        ret
 
 error_msg: db "Disc error! No additonal sectors loaded", 0
 

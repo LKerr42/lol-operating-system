@@ -189,26 +189,6 @@ obtain_smap:
         stc
         ret
 
-print_string_bios:  
-    .loop:
-        ; put char into al and test if its the null terminator
-        mov al, [si]
-        test al, al
-
-        jz .done
-
-        ; send char at location stored in si to bios screen  
-        mov ah, 0x0E
-        int 0x10
-
-        ; increment si
-        inc si
-
-        jmp .loop
-
-    .done:
-        ret
-
 print_hex_bios:
     pusha
 
