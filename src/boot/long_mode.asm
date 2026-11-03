@@ -16,21 +16,7 @@ _long_mode_main:
     xor rbp, rbp
 
     ; clear screen with blue
-    mov edi, 0xB8000
-    mov rcx, 500
-    mov rax, 0x1F201F201F201F20    
-    rep stosq
-
-    mov rax, 0x1F6C1F6C1F651F48
-    mov [edi], rax
-
-    mov rax, 0x1F6F1F571F201F6F
-    mov [edi + 8], rax
-
-    mov rax, 0x1F211F641F6C1F72
-    mov [edi + 16], rax
-
-    mov edi, 0xB8000
+    call clear_screen_with_blue
 
     call update_cursor
 
@@ -51,6 +37,25 @@ populate_boot_info:
     mov qword [BOOT_INFO_ADDR + 24], KERNEL_LOAD_ADDR
 
     mov qword [BOOT_INFO_ADDR + 32], KERNEL_SIZE
+
+    ret
+
+clear_screen_with_blue:
+    mov edi, 0xB8000
+    mov rcx, 500
+    mov rax, 0x1F201F201F201F20    
+    rep stosq
+
+    mov rax, 0x1F6C1F6C1F651F48
+    mov [edi], rax
+
+    mov rax, 0x1F6F1F571F201F6F
+    mov [edi + 8], rax
+
+    mov rax, 0x1F211F641F6C1F72
+    mov [edi + 16], rax
+
+    mov edi, 0xB8000
 
     ret
 

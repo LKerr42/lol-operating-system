@@ -11,6 +11,8 @@ KERNEL_LOAD_ADDR    equ 0x100000
 KERNEL_SIZE         equ 512 * 1     ; sector size * 1
 
 kernel_entry:
+    call clear_screen_with_blue
+
     ; move kernel from temp location to final dest
     mov rsi, KERNEL_TEMP_ADDR   ; source
     mov rdi, KERNEL_LOAD_ADDR   ; dest
@@ -29,7 +31,6 @@ kernel_entry:
     mov rsp, 0x90000
     and rsp, -16
 
-    ; give boot info address to kernel
     cld
     cli
 
