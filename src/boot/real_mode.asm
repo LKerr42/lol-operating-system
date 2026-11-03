@@ -4,9 +4,6 @@ DATA_SEG_32         equ gdt_data_32 - gdt_start
 MEMORY_MAP_ADDR     equ 0x5000
 MEMORY_MAP_COUNT    equ 0x0500
 
-KERNEL_LOAD_ADDR    equ 0x100000
-KERNEL_SIZE         equ 0x40000
-
 _real_mode_main:
     mov si, welcome_message
     call print_string_bios

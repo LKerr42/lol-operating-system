@@ -22,13 +22,15 @@ start:
     ; store boot drive info
     mov [BOOT_INFO_ADDR], dl
 
+    ; loading in additional sectors
+    ; rest of the bootloader = 3 extra sections, kernel = 1 sector
+
     ; set parameters 
-    ; (in order: read sector function, sectors, cylinder, start sector, head)
-    mov ah, 0x02
-    mov al, 3
-    mov ch, 0
-    mov cl, 2
-    mov dh, 0
+    mov ah, 0x02        ; read sector function
+    mov al, 4           ; additonal sectors count
+    mov ch, 0           ; cylinder
+    mov cl, 2           ; start sector
+    mov dh, 0           ; head
 
     ; call interup, handle a disc error
     int 0x13

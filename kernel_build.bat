@@ -1,5 +1,5 @@
 @echo off
-echo Building...
+echo Compiling kernel...
 
 REM Compile, link, and convert kernel
 
