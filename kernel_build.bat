@@ -1,5 +1,4 @@
 @echo off
-echo Compiling kernel...
 
 REM Compile, link, and convert kernel
 
@@ -7,7 +6,7 @@ x86_64-elf-gcc ^
     -ffreestanding ^
     -mno-red-zone ^
     -fno-stack-protector ^
-    -c src/kernel/kernel.c ^
+    -c src/kernel/main.c ^
     -o build/kernel.o
 
 cd build
