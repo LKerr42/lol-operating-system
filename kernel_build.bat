@@ -6,6 +6,7 @@ x86_64-elf-gcc ^
     -ffreestanding ^
     -mno-red-zone ^
     -fno-stack-protector ^
+    -std=gnu11 ^
     -c src/kernel/main.c ^
     -o build/kernel.o
 
