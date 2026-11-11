@@ -1,31 +1,21 @@
 [bits 64]
+section .text.entry
 
-; global kernel_entry   
-; extern kernel_main
+global kernel_entry   
+extern kernel_main
 
-; extern __bss_start
-; extern __bss_end
-
-KERNEL_TEMP_ADDR    equ 0x7C00 + (512 * 4)     ; boot start + bootloader size (sector size * 4 sectors)
-KERNEL_LOAD_ADDR    equ 0x100000
-KERNEL_SIZE         equ 512 * 1     ; sector size * 1
+extern __bss_start
+extern __bss_end
 
 kernel_entry:
     call clear_screen_with_blue
 
-    ; move kernel from temp location to final dest
-    mov rsi, KERNEL_TEMP_ADDR   ; source
-    mov rdi, KERNEL_LOAD_ADDR   ; dest
-    mov rcx, KERNEL_SIZE        ; Number of bytes to copy
-    cld                         ; auto-increment RSI and RDI
-    rep movsb                   ; move data by bytes
-
     ; clear BSS
-    ; mov rdi, __bss_start
-    ; mov rcx, __bss_end
-    ; sub rcx, rdi
-    ; xor eax, eax
-    ; rep stosb
+    mov rdi, __bss_start
+    mov rcx, __bss_end
+    sub rcx, rdi
+    xor eax, eax
+    rep stosb
 
     ; reset stack
     mov rsp, 0x90000
@@ -38,11 +28,9 @@ kernel_entry:
     
     mov rdi, BOOT_INFO_ADDR
 
-    mov rax, KERNEL_LOAD_ADDR
+    mov rax, kernel_main
     jmp rax
 
     jmp $
-
-times 2046-($-$$) db 0
 
 dw 0x6F6C

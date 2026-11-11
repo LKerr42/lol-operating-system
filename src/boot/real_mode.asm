@@ -1,3 +1,6 @@
+[bits 16]
+section .boot.text
+
 CODE_SEG_32         equ gdt_code_32 - gdt_start
 DATA_SEG_32         equ gdt_data_32 - gdt_start
 

@@ -1,3 +1,5 @@
+section .boot.text
+
 gdt_start:
     gdt_null:
         dq 0

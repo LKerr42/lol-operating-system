@@ -1,4 +1,5 @@
 [bits 32]
+section .boot.text
 
 SIZEOF_PAGE_TABLE   equ 4096
 

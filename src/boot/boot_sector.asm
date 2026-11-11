@@ -1,4 +1,5 @@
 [bits 16]
+section .boot.sector
 
 start:
     cli

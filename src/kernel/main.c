@@ -5,7 +5,7 @@ int cursor = 0;
 
 void kernel_main(void) {
     char message_one[] = "Hello, C!\n";
-    char message_two[] = "How are you?";
+    char message_two[] = "How are you?\n";
 
     vga_print(&message_one[0], 0x1F);
     vga_print(&message_two[0], 0x1F);
