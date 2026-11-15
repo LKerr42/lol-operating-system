@@ -1,6 +1,8 @@
 [bits 16]
 section .boot.sector
 
+EXTERN __loadable_sectors_count
+
 start:
     cli
 
@@ -24,14 +26,14 @@ start:
     mov [BOOT_INFO_ADDR], dl
 
     ; loading in additional sectors
-    ; rest of the bootloader = 3 extra sections, kernel = 1 sector
+    ; rest of the bootloader + kernel
 
     ; set parameters 
-    mov ah, 0x02        ; read sector function
-    mov al, 4           ; additonal sectors count
-    mov ch, 0           ; cylinder
-    mov cl, 2           ; start sector
-    mov dh, 0           ; head
+    mov ah, 0x02                        ; read sector function
+    mov al, __loadable_sectors_count    ; additonal sectors count
+    mov ch, 0                           ; cylinder
+    mov cl, 2                           ; start sector
+    mov dh, 0                           ; head
 
     ; call interup, handle a disc error
     int 0x13

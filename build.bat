@@ -2,61 +2,90 @@
 
 set MSYSTEM=UCRT64
 set CHERE_INVOKING=1
+setlocal EnableExtensions EnableDelayedExpansion
 
 REM -- bootloader --
 
 echo Building bootloader...
 
-nasm -f elf64 src/boot/boot.asm -o build/bootloader.o
+nasm -f elf64 src/boot/boot.asm -o build/obj/bootloader.o
+
+if errorlevel 1 (
+    echo Bootloader build failed!
+    exit /b 1
+)
 
 REM -- kernel --
 
+set "TARGET_DIR=%~dp0src\kernel"
+set "BUILD_DIR=%~dp0build"
+set "OBJECT_DIR=%BUILD_DIR%\obj"
+
+set "CFLAGS=-ffreestanding -mno-red-zone -fno-stack-protector -fno-pie -fno-pic -mcmodel=small -fno-asynchronous-unwind-tables -fno-unwind-tables -std=gnu11"
+
+REM -- Compile all kernel source files -- 
+
 echo Compiling kernel...
 
-REM Compile, link, and convert kernel
+set "OBJECTS="
 
-x86_64-elf-gcc ^
-    -ffreestanding ^
-    -mno-red-zone ^
-    -fno-stack-protector ^
-    -fno-pie ^
-    -fno-pic ^
-    -mcmodel=small ^
-    -fno-asynchronous-unwind-tables ^
-    -fno-unwind-tables ^
-    -std=gnu11 ^
-    -c src/kernel/main.c ^
-    -o build/kernel.o
+for /r "%TARGET_DIR%" %%F in (*.c) do (
+    REM get relative path
+    set "REL=%%F"
+    set "REL=!REL:%TARGET_DIR%\=!"
 
-cd build
+    REM change string extention to .o
+    set "OBJ_REL=!REL:.c=.o!"
+
+    REM create output dir
+    set "OBJ_FILE=%OBJECT_DIR%\!OBJ_REL!"
+
+    for %%D in ("!OBJ_FILE!") do (
+        if not exist "%%~dpD" mkdir "%%~dpD"
+    )
+
+    echo Compiling: %%F
+
+    x86_64-elf-gcc !CFLAGS! ^
+        -I "%~dp0include" ^
+        -c "%%F" ^
+        -o "!OBJ_FILE!"
+
+    if errorlevel 1 (
+        echo Compilation failed: %%F
+        exit /b 1
+    )
+
+    REM Add compiled object to linker input list
+    set "OBJECTS=!OBJECTS! "!OBJ_FILE!""
+)
 
 echo Linking kernel and bootloader...
-
-@REM  x86_64-elf-ld ^
-@REM      -T linker.ld ^
-@REM      -o kernel.elf ^
-@REM      kernel.o
 
 x86_64-elf-gcc ^
     -nostdlib ^
     -static ^
     -no-pie ^
-    -Wl,-T,linker.ld ^
-    -Wl,-Map,os.map ^
+    -Wl,-T,"%~dp0linker.ld" ^
+    -Wl,-Map,"%BUILD_DIR%\os.map" ^
     -Wl,--build-id=none ^
-    -o os.elf ^
-    bootloader.o ^
-    kernel.o ^
+    -o "%BUILD_DIR%\os.elf" ^
+    "%BUILD_DIR%\obj\bootloader.o" ^
+    !OBJECTS! ^
     -lgcc
+
+if errorlevel 1 (
+    echo Linking failed!
+    exit /b 1
+)
 
 x86_64-elf-objcopy ^
     -O binary ^
-    os.elf ^
-    disc.bin
+    "%BUILD_DIR%\os.elf" ^
+    "%BUILD_DIR%\disc.bin"
 
 if errorlevel 1 (
-    echo Build failed!
-    pause
+    echo Binary generation failed!
     exit /b 1
 )
 
@@ -65,6 +94,8 @@ echo Build successful!
 REM -- disc image --
 
 echo Building disc image...
+
+cd build
 
 type nul > os.img
 dd if=/dev/zero of=os.img bs=1M count=16
