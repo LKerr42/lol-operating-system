@@ -4,6 +4,8 @@ section .text.entry
 global kernel_entry   
 extern kernel_main
 
+extern kernel_stack_top
+
 extern __bss_start
 extern __bss_end
 
@@ -17,15 +19,15 @@ kernel_entry:
     xor eax, eax
     rep stosb
 
-    ; reset stack
-    mov rsp, 0x90000
+    ; establish kernel stack
+    lea rsp, [rel kernel_stack_top]
     and rsp, -16
 
+    ; clear direction flag and interup flag
     cld
     cli
 
     ; give boot info and jump to kernel
-    
     mov rdi, BOOT_INFO_ADDR
 
     mov rax, kernel_main

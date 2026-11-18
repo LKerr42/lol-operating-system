@@ -1,6 +1,5 @@
 @echo off
 
-REM                                     -- docs --
 REM     script use:
 REM         arg1: script name
 REM         arg2: dest, created if not already real
@@ -11,7 +10,7 @@ REM -- create .c file --
 
 cd src
 
-mkdir "%1"
+if not exist "%1" mkdir "%1"
 
 cd %1
 
@@ -22,7 +21,7 @@ REM -- create .h file --
 cd %~dp0
 cd include
 
-mkdir "%1"
+if not exist "%1" mkdir "%1"
 
 cd "%1"
 
