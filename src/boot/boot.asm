@@ -1,3 +1,5 @@
+[DEFAULT ABS]
+
 ; stage one, first sector
 %include "src/boot/boot_sector.asm"
 
