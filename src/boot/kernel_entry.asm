@@ -9,6 +9,8 @@ extern kernel_stack_top
 extern __bss_start
 extern __bss_end
 
+extern cpu_enable_sse
+
 kernel_entry:
     call clear_screen_with_blue
 
@@ -26,6 +28,9 @@ kernel_entry:
     ; clear direction flag and interup flag
     cld
     cli
+
+    ; setup SSE
+    call cpu_enable_sse
 
     ; give boot info and jump to kernel
     mov rdi, BOOT_INFO_ADDR

@@ -2,11 +2,42 @@
 
 extern void _load_GDT(uint16_t limit, uint64_t base);
 
-/* Keep the GDT in persistent memory. */
+/* Keep the GDT and TSS in persistent memory. */
 static gdt_t kernel_gdt;
+static tss_t kernel_tss;
+
+extern uint8_t kernel_stack_top[];
+extern uint8_t double_fault_stack_top[];
+
+static tss_descriptor_t encode_TSS_descriptor(uint64_t base, uint32_t limit) {
+    return (tss_descriptor_t) {
+        .limit_0 = limit & 0xFFFF,
+
+        .base_0 = base & 0xFFFF,
+        .base_1 = (base >> 16) & 0xFF,
+
+        .type_flags_0 = 0x89,
+
+        .limit_1_flags_1 = (limit >> 16) & 0x0F,
+
+        .base_2 = (base >> 24) & 0xFF,
+        .base_3 = (base >> 32) & 0xFFFFFFFF,
+
+        .reserved = 0
+    };
+}
+
+static void setup_TSS() {
+    kernel_tss = (tss_t){0};
+
+    kernel_tss.rsp0 = (uint64_t)kernel_stack_top;
+    kernel_tss.ist1 = (uint64_t)double_fault_stack_top;
+
+    kernel_tss.iomap_base = sizeof(tss_t);
+}
 
 static gdt_entry_t encode_GDT_entry(uint32_t limit, uint16_t base, uint8_t access, uint8_t flags) {
-    gdt_entry_t entry;
+    gdt_entry_t entry = (gdt_entry_t){0};
 
     // Encode the limit
     entry.limit_0 = limit & 0xFF;
@@ -36,9 +67,10 @@ void setup_GDT() {
         .user_null      = encode_GDT_entry(0, 0, 0, 0),
         .user_code      = encode_GDT_entry(0xFFFFF, 0, 0xF2, 0xC),
         .user_data      = encode_GDT_entry(0xFFFFF, 0, 0xFA, 0xA),
-        //.tss_1        = encode_GDT_entry(),
-        //.tss_2        = encode_GDT_entry(),
+        .tss            = encode_TSS_descriptor((uint64_t)&kernel_tss, sizeof(tss_t) - 1),
     };
+
+    setup_TSS();
 
     _load_GDT((uint16_t)(sizeof(kernel_gdt) - 1), (uint64_t)&kernel_gdt);
 }
