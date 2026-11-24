@@ -1,30 +1,9 @@
 #include <kernel/drivers/video/vga.h>
 
-int cursor = 0;
+static int cursor = 0;
+static volatile char *vga = (char *)0xB8000;
 
-void vga_print(char* msg, int frmt) {
-    volatile char *vga = (char *)0xB8000;
-    int msgIndx = 0;
-
-    while (msg[msgIndx] != '\0')
-    {
-        if (msg[msgIndx] == '\n') {
-            cursor += 160 - (cursor % 160);
-
-            msgIndx++;
-            continue;
-        }
-
-        vga[cursor] = msg[msgIndx];
-        vga[cursor+1] = frmt;
-
-        msgIndx++;
-        cursor += 2;
-    }
-    update_cursor();
-}
-
-void update_cursor() {
+static void update_cursor() {
     __asm__ volatile (
         // Put cursor into BX
         "movw %w0, %%bx\n\t"
@@ -51,4 +30,29 @@ void update_cursor() {
         : "r" (cursor>>1)
         : "rax", "rbx", "rdx"
     );
+}
+
+void vga_print(char* msg, int frmt) {
+    int msgIndx = 0;
+
+    while (msg[msgIndx] != '\0')
+    {
+        if (msg[msgIndx] == '\n') {
+            cursor += 160 - (cursor % 160);
+
+            msgIndx++;
+            continue;
+        }
+
+        vga[cursor] = msg[msgIndx];
+        vga[cursor+1] = frmt;
+
+        msgIndx++;
+        cursor += 2;
+    }
+    update_cursor();
+}
+
+void vga_newline() {
+    cursor += 160 - (cursor % 160);
 }

@@ -32,7 +32,7 @@ void set_idt_gate(
     entry->reserved = 0;
 }
 
-void init_idt() {
+void init_IDT() {
     //setup table
     set_idt_gate(_isr0, 0, INTERUPT_GATE, 0);
     set_idt_gate(_isr6, 6, INTERUPT_GATE, 0);

@@ -32,7 +32,7 @@ extern void _isr13(void);
 extern void _isr14(void);
 extern void _isr19(void);
 
-void init_idt();
+void init_IDT();
 void set_idt_gate(
     void* isr,
     uint8_t vector,

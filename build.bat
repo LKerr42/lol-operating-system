@@ -30,7 +30,7 @@ set "OBJECTS="
 
 REM -- Compile all ASM source files -- 
 
-echo Compiling kernel ASM files...
+echo Assembling kernel ASM files...
 
 for /r "%SRC_DIR%" %%F in (*.asm) do (
     set "REL=%%F"
@@ -92,7 +92,7 @@ for /r "%SRC_DIR%" %%F in (*.c) do (
     set "OBJECTS=!OBJECTS! "!OBJ_FILE!""
 )
 
-echo Linking kernel and bootloader...
+echo Linking object files...
 
 x86_64-elf-gcc ^
     -nostdlib ^
