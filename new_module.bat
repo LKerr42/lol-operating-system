@@ -1,10 +1,10 @@
 @echo off
 
 REM     script use:
-REM         arg1: script name
-REM         arg2: dest, created if not already real
-REM         arg3: file name, exclude extention as both .c and .h files will be made
-REM         arg4: include file title, for the include guard 
+REM         arg0: script name
+REM         arg1: dest, created if not already real
+REM         arg2: file name, exclude extention as both .c and .h files will be made
+REM         arg3: include file title, for the include guard 
 
 REM -- create .c file --
 
@@ -14,7 +14,9 @@ if not exist "%1" mkdir "%1"
 
 cd %1
 
-type nul > "%2".c
+(
+    echo #include ^<%1/%2.h^>
+) > "%2".c
 
 REM -- create .h file --
 

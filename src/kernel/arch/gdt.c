@@ -59,7 +59,7 @@ static gdt_entry_t encode_GDT_entry(uint32_t limit, uint16_t base, uint8_t acces
     return entry;
 }
 
-void setup_GDT() {
+void init_GDT() {
     kernel_gdt = (gdt_t){
         .null           = encode_GDT_entry(0, 0, 0, 0),
         .kernel_code    = encode_GDT_entry(0xFFFFF, 0, 0x9A, 0xA),

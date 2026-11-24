@@ -60,6 +60,6 @@ typedef struct {
     tss_descriptor_t tss;
 }__attribute__((packed)) gdt_t;
 
-void setup_GDT();
+void init_GDT();
 
 #endif

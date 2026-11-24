@@ -33,7 +33,7 @@ _load_GDT:
         mov ss, ax
 
         ; Load TSS
-        ; mov ax, 0x30
-        ; ltr ax
+        mov ax, 0x30
+        ltr ax
 
         ret

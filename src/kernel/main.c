@@ -10,7 +10,7 @@ void kernel_main(boot_info_t *boot_info) {
     vga_print(&message_one[0], BG_BLUE | TXT_WHITE);
     vga_print(&message_two[0], BG_BLUE | TXT_WHITE);
 
-    setup_GDT();
+    init_GDT();
 
     for (;;) {
         __asm__ volatile ("hlt");
