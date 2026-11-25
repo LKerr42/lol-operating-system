@@ -1,11 +1,15 @@
 [bits 64]
 section .boot.text
 
-EXTERN __kernel_temp_addr
-EXTERN __kernel_load_addr
-EXTERN __kernel_size
-
 BOOT_INFO_ADDR      equ 0x6000
+
+extern __kernel_temp_addr
+extern __kernel_load_addr
+extern __kernel_size
+
+extern kernel_entry
+
+global BOOT_INFO_ADDR
 
 _long_mode_main:
     ; segment registers
@@ -36,6 +40,8 @@ _long_mode_main:
     mov rcx, __kernel_size          ; Number of bytes to copy
     cld                             ; auto-increment RSI and RDI
     rep movsb                       ; move data by bytes
+
+    call clear_screen_with_blue
 
     jmp kernel_entry
 
@@ -148,3 +154,5 @@ update_cursor:
 
 hello_msg: db "Hello, Long Mode!", 0x0A, 0
 cursor_pos: dw 0
+
+dw 0x6F6C ; write "lo" to signify the end of the bootloader

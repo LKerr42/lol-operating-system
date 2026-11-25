@@ -1,4 +1,4 @@
-#include <kernel/arch/gdt.h>
+#include <arch/x86_64/gdt.h>
 
 extern void _load_GDT(uint16_t limit, uint64_t base);
 

@@ -1,6 +1,8 @@
 [bits 64]
 section .text.entry
 
+extern BOOT_INFO_ADDR
+
 global kernel_entry   
 extern kernel_main
 
@@ -12,8 +14,6 @@ extern __bss_end
 extern cpu_enable_sse
 
 kernel_entry:
-    call clear_screen_with_blue
-
     ; clear BSS
     mov rdi, __bss_start
     mov rcx, __bss_end
@@ -39,5 +39,3 @@ kernel_entry:
     jmp rax
 
     jmp $
-
-dw 0x6F6C

@@ -4,8 +4,9 @@ set MSYSTEM=UCRT64
 set CHERE_INVOKING=1
 setlocal EnableExtensions EnableDelayedExpansion
 
-set "SRC_DIR=%~dp0src\kernel"
-set "BUILD_DIR=%~dp0build"
+set "ROOT_DIR=%~dp0"
+set "SRC_DIR=%ROOT_DIR%kernel\src"
+set "BUILD_DIR=%ROOT_DIR%build"
 set "OBJECT_DIR=%BUILD_DIR%\obj"
 
 if not exist "%OBJECT_DIR%" mkdir "%OBJECT_DIR%"
@@ -14,8 +15,10 @@ REM -- bootloader --
 
 echo Building bootloader...
 
-type nul > build/obj/bootloader.o
-nasm -f elf64 src/boot/boot.asm -o build/obj/bootloader.o
+if not exist "%OBJECT_DIR%/boot" mkdir "%OBJECT_DIR%/boot"
+
+type nul > build/obj/boot/bootloader.o
+nasm -f elf64 bootloader/src/boot.asm -o build/obj/boot/bootloader.o
 
 if errorlevel 1 (
     echo Bootloader build failed!
@@ -56,7 +59,6 @@ for /r "%SRC_DIR%" %%F in (*.asm) do (
     set "OBJECTS=!OBJECTS! "!OBJ_FILE!""
 )
 
-
 echo Compiling kernel C files...
 
 REM -- Compile all C source files -- 
@@ -79,7 +81,7 @@ for /r "%SRC_DIR%" %%F in (*.c) do (
     echo Compiling: %%F
 
     x86_64-elf-gcc !CFLAGS! ^
-        -I "%~dp0include" ^
+        -I "%~dp0kernel/include" ^
         -c "%%F" ^
         -o "!OBJ_FILE!"
 
@@ -102,7 +104,7 @@ x86_64-elf-gcc ^
     -Wl,-Map,"%BUILD_DIR%\os.map" ^
     -Wl,--build-id=none ^
     -o "%BUILD_DIR%\os.elf" ^
-    "%BUILD_DIR%\obj\bootloader.o" ^
+    "%BUILD_DIR%\obj\boot\bootloader.o" ^
     !OBJECTS! ^
     -lgcc
 

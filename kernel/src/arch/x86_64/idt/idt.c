@@ -1,6 +1,6 @@
-#include <kernel/arch/idt/idt.h>
-#include <kernel/arch/idt/trap_frame.h>
-#include <kernel/arch/idt/exceptions.h>
+#include <arch/x86_64/idt/idt.h>
+#include <arch/x86_64/idt/trap_frame.h>
+#include <arch/x86_64/idt/exceptions.h>
 
 extern void _load_IDT(idtr_t *idt_desc);
 

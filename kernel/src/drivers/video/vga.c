@@ -1,4 +1,4 @@
-#include <kernel/drivers/video/vga.h>
+#include <drivers/video/vga.h>
 
 static int cursor = 0;
 static volatile char *vga = (char *)0xB8000;

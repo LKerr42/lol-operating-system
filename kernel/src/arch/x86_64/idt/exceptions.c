@@ -1,5 +1,5 @@
-#include <kernel/arch/idt/exceptions.h>
-#include <kernel/drivers/video/vga.h>
+#include <arch/x86_64/idt/exceptions.h>
+#include <drivers/video/vga.h>
 
 void cpu_exception_handler(
     const char *msg, 

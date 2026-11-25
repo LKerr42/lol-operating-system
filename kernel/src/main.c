@@ -1,8 +1,8 @@
-#include <kernel/drivers/video/vga.h>
+#include <drivers/video/vga.h>
 
-#include <kernel/arch/boot_data.h>
-#include <kernel/arch/gdt.h>
-#include <kernel/arch/idt/idt.h>
+#include <arch/x86_64/boot_data.h>
+#include <arch/x86_64/gdt.h>
+#include <arch/x86_64/idt/idt.h>
 
 void kernel_main(boot_info_t *boot_info) {
     char message_one[] = "Hello, C!\n";
