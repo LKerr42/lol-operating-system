@@ -35,7 +35,7 @@
 #define TXT_YELLOW 0xE
 #define TXT_WHITE 0xF
 
-void vga_print(char* msg, int frmt);
+void vga_print(const char* msg, int frmt);
 void vga_newline();
 
 #endif

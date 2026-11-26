@@ -8,7 +8,7 @@ REM         arg3: include file title, for the include guard
 
 REM -- create .c file --
 
-cd src
+cd kernel/src
 
 if not exist "%1" mkdir "%1"
 
@@ -20,8 +20,7 @@ cd %1
 
 REM -- create .h file --
 
-cd %~dp0
-cd include
+cd %~dp0kernel/include
 
 if not exist "%1" mkdir "%1"
 

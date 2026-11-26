@@ -9,15 +9,12 @@ void cpu_exception_handler(
     uint64_t cs,
     uint64_t rflags
 ) {
-    char open_msg[]  = "================ CPU EXCEPTION ================\n";
-    char close_msg[] = "================ SYSTEM HALTED ================\n";
-
-    vga_print(&open_msg[0] , BG_BLUE | TXT_WHITE);
+    vga_print("================ CPU EXCEPTION ================\n", BG_BLUE | TXT_WHITE);
 
     vga_print(msg , BG_BLUE | TXT_WHITE);
     vga_newline();
 
-    vga_print(&close_msg[0] , BG_BLUE | TXT_WHITE);
+    vga_print("================ SYSTEM HALTED ================\n", BG_BLUE | TXT_WHITE);
 
     for (;;) {
         __asm__ volatile ("hlt");

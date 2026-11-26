@@ -32,7 +32,7 @@ static void update_cursor() {
     );
 }
 
-void vga_print(char* msg, int frmt) {
+void vga_print(const char* msg, int frmt) {
     int msgIndx = 0;
 
     while (msg[msgIndx] != '\0')

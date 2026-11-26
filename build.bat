@@ -27,7 +27,7 @@ if errorlevel 1 (
 
 REM -- kernel --
 
-set "CFLAGS=-ffreestanding -mno-red-zone -fno-stack-protector -fno-pie -fno-pic -mcmodel=small -fno-asynchronous-unwind-tables -fno-unwind-tables"
+set "CFLAGS=-ffreestanding -fno-builtin -mno-red-zone -fno-stack-protector -fno-pie -fno-pic -mcmodel=small -fno-asynchronous-unwind-tables -fno-unwind-tables"
 
 set "OBJECTS="
 
