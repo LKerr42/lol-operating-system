@@ -1,4 +1,4 @@
-#include <lib/string.h>
+#include <lib/stdio.h>
 
 #include <drivers/video/vga.h>
 
@@ -12,6 +12,11 @@ void kernel_main(boot_info_t *boot_info) {
 
     init_GDT();
     init_IDT();
+
+    char buffer[64];
+    snprintf(buffer, sizeof(buffer), "me %i%%: %s%c", -100, "not goated", '!');
+
+    vga_print(buffer, BG_BLUE | TXT_WHITE);
 
     for (;;) {
         __asm__ volatile ("hlt");

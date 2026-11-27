@@ -55,5 +55,11 @@ int strcmp(const char* str1, const char* str2)
 
 char* strcpy(const char* dst, const char* src) 
 {
-    return (char*)memcpy(dst, src, strlen(src));
+    return (char*)memcpy((void*)dst, (void*)src, strlen(src));
+}
+
+char* strcat(void* dst, void* src) {
+    unsigned char *dest_cursor = (unsigned char*)(dst + strlen(dst));
+
+    return strcpy(dest_cursor, src);
 }

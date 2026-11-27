@@ -53,6 +53,19 @@ void vga_print(const char* msg, int frmt) {
     update_cursor();
 }
 
+void vga_putch(char ch, int frmt) {
+    if (ch == '\n') {
+        cursor += 160 - (cursor % 160);
+    } else {
+        vga[cursor] = ch;
+        vga[cursor+1] = frmt;
+    }
+
+    cursor += 2;
+
+    update_cursor();
+}
+
 void vga_newline() {
     cursor += 160 - (cursor % 160);
 }

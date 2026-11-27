@@ -36,6 +36,7 @@
 #define TXT_WHITE 0xF
 
 void vga_print(const char* msg, int frmt);
+void vga_putch(char ch, int frmt);
 void vga_newline();
 
 #endif
