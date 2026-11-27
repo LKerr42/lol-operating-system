@@ -9,15 +9,20 @@ void cpu_exception_handler(
     uint64_t cs,
     uint64_t rflags
 ) {
-    vga_print("================ CPU EXCEPTION ================\n", BG_BLUE | TXT_WHITE);
+    vga_set_std_format(BG_BLUE | TXT_LT_RED);
 
-    vga_print(msg , BG_BLUE | TXT_WHITE);
-    vga_newline();
+    vga_printf("================ CPU EXCEPTION ================\n");
 
-    vga_print("================ SYSTEM HALTED ================\n", BG_BLUE | TXT_WHITE);
+    vga_printf("Execption: %s\n", msg);
+    vga_printf("Vector: %u\n", vector);
+    vga_printf("Error Code: %u\n", err_code);
+    vga_printf("RIP: 0x%X\n", rip);
+    vga_printf("CS: 0x%X\n", cs);
+    vga_printf("RFLAGS: 0b%b\n", rflags);
+
+    vga_printf("================ SYSTEM HALTED ================\n");
 
     for (;;) {
         __asm__ volatile ("hlt");
     }
-    //TODO: impliment basic string lib functions and come back to this
 }

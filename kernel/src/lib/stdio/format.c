@@ -55,6 +55,16 @@ int vformat(output_format_t *out_format, size_t size, const char *format, va_lis
 
                     output_string(out_format, buffer);
                     break;
+                case 'b':
+                    int_to_string(
+                        buffer,
+                        va_arg(ap, unsigned int),
+                        2,
+                        0
+                    );
+
+                    output_string(out_format, buffer);
+                    break;
                 case 'f':
                     //TODO: add a float to string func
                     break;

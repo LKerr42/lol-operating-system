@@ -89,9 +89,9 @@ void vga_putch(char ch) {
     } else {
         vga[cursor] = ch;
         vga[cursor+1] = standard_format;
-    }
 
-    cursor += 2;
+        cursor += 2;
+    }
 
     update_cursor();
 }
