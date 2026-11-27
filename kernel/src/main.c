@@ -14,9 +14,11 @@ void kernel_main(boot_info_t *boot_info) {
     init_IDT();
 
     char buffer[64];
-    snprintf(buffer, sizeof(buffer), "me %i%%: %s%c", -100, "not goated", '!');
+    snprintf(buffer, sizeof(buffer), "me %i%%: %s%c\n", 100, "goated", '!');
 
     vga_print(buffer, BG_BLUE | TXT_WHITE);
+
+    vga_printf("me:\n - goated: %u%% \n - not goated: %i%% \n - final verdict: %s%c", 100, -100, "goated", '!');
 
     for (;;) {
         __asm__ volatile ("hlt");

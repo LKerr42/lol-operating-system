@@ -1,7 +1,37 @@
 #include <drivers/video/vga.h>
 
+#include <lib/stdio/format.h>
+
 static int cursor = 0;
 static volatile char *vga = (char *)0xB8000;
+static int standard_format = BG_BLUE | TXT_WHITE;
+
+static void vga_output_putchar(char c, void *context) {
+    vga_putch(c);
+}
+
+static output_format_t vga_output = {
+    .putchar = vga_output_putchar,
+    .context = NULL
+};
+
+size_t vga_printf(const char *format, ...) {
+    va_list args;
+
+    va_start(args, format);
+
+    size_t chars_written = 
+        vformat(
+            &vga_output,
+            (size_t)4000,
+            format,
+            args
+        );
+    
+    va_end(args);
+
+    return chars_written;
+}
 
 static void update_cursor() {
     __asm__ volatile (
@@ -53,17 +83,21 @@ void vga_print(const char* msg, int frmt) {
     update_cursor();
 }
 
-void vga_putch(char ch, int frmt) {
+void vga_putch(char ch) {
     if (ch == '\n') {
         cursor += 160 - (cursor % 160);
     } else {
         vga[cursor] = ch;
-        vga[cursor+1] = frmt;
+        vga[cursor+1] = standard_format;
     }
 
     cursor += 2;
 
     update_cursor();
+}
+
+void vga_set_std_format(int new_format) {
+    standard_format = new_format;
 }
 
 void vga_newline() {

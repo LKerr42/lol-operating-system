@@ -35,8 +35,14 @@
 #define TXT_YELLOW 0xE
 #define TXT_WHITE 0xF
 
+#include <lib/stdio.h>
+
+size_t vga_printf(const char *format, ...);
+void vga_putch(char ch);
+
 void vga_print(const char* msg, int frmt);
-void vga_putch(char ch, int frmt);
+
+void vga_set_std_format(int new_format);
 void vga_newline();
 
 #endif
