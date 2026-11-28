@@ -13,6 +13,8 @@ void kernel_main(boot_info_t *boot_info) {
     init_GDT();
     init_IDT();
 
+    int test = 13 / 0;
+
     for (;;) {
         __asm__ volatile ("hlt");
     }

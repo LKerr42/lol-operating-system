@@ -17,17 +17,10 @@ typedef struct {
     void *context;
 } output_format_t;
 
-size_t int_to_string(
-    char *buffer,
-    long long int value,
-    unsigned int base,
-    int uppercase
-);
-
 int vformat(output_format_t *out_format, size_t size, const char *format, va_list ap);
 
-void output_char(output_format_t *out_form, char c);
-void output_string(output_format_t *out_form, const char *str);
+int output_char(output_format_t *out_form, char c);
+int output_string(output_format_t *out_form, const char *str);
 void buffer_putch(char c, void *context);
 
 #endif

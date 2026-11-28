@@ -82,7 +82,6 @@ for /r "%SRC_DIR%" %%F in (*.c) do (
 
     x86_64-elf-gcc !CFLAGS! ^
         -I "%~dp0kernel/include" ^
-        -I "%~dp0kernel/src" ^
         -c "%%F" ^
         -o "!OBJ_FILE!"
 
