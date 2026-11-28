@@ -14,6 +14,10 @@ extern __bss_end
 extern cpu_enable_sse
 
 kernel_entry:
+    ; clear direction flag and interup flag
+    cld
+    cli
+    
     ; clear BSS
     mov rdi, __bss_start
     mov rcx, __bss_end
@@ -24,10 +28,7 @@ kernel_entry:
     ; establish kernel stack
     lea rsp, [rel kernel_stack_top]
     and rsp, -16
-
-    ; clear direction flag and interup flag
-    cld
-    cli
+    xor rbp, rbp
 
     ; setup SSE
     call cpu_enable_sse
@@ -36,6 +37,6 @@ kernel_entry:
     mov rdi, BOOT_INFO_ADDR
 
     mov rax, kernel_main
-    jmp rax
+    call rax
 
     jmp $

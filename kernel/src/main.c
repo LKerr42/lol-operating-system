@@ -6,6 +6,12 @@
 #include <arch/x86_64/gdt.h>
 #include <arch/x86_64/idt/idt.h>
 
+static inline uintptr_t get_rsp(void) {
+    uintptr_t rsp;
+    __asm__ __volatile__("mov %%rsp, %0" : "=r"(rsp));
+    return rsp;
+}
+
 void kernel_main(boot_info_t *boot_info) {
     vga_printf("Hello, C!\n");
     vga_printf("How are you?\n");
@@ -13,7 +19,13 @@ void kernel_main(boot_info_t *boot_info) {
     init_GDT();
     init_IDT();
 
-    int test = 13 / 0;
+    vga_printf("me %i%%: %s%c\n", 100, "goated", '!');
+    vga_printf("me %.5f%%: %s", 0.00001, "not goated?\n");
+    vga_printf("me %f\n", 0.1f);
+
+    uintptr_t rsp = get_rsp();
+
+    vga_printf("RSP & 0xF: %i\n", rsp & 0xF);
 
     for (;;) {
         __asm__ volatile ("hlt");

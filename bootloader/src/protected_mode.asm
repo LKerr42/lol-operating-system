@@ -116,7 +116,7 @@ set_pages:
     mov edi, PDT_ADDR
     mov ebx, PT_PRESENT | PT_READABLE | PT_HUGE
     ; mov ecx, ENTRIES_PER_PT
-    mov ecx, 8 ; identity-map 16 MiB to start
+    mov ecx, 16 ; identity-map 32 MiB to start
 
     .set_entry:
         mov DWORD [edi], ebx

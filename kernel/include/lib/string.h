@@ -11,5 +11,9 @@ size_t strlen(const char* str);
 int strcmp(const char* str1, const char* str2);
 char* strcpy(const char* dst, const char* src);
 char* strcat(void* dst, void* src);
+void* strrev(void* str, size_t size);
+
+int is_alpha(char c);
+int is_numeric(char c);
 
 #endif

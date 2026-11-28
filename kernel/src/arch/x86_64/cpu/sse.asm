@@ -35,6 +35,5 @@ cpu_enable_sse:
         ret
 
 section .rodata align=4
-
 default_mxcsr:
     dd 0x1F80

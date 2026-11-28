@@ -63,3 +63,30 @@ char* strcat(void* dst, void* src) {
 
     return strcpy(dest_cursor, src);
 }
+
+void* strrev(void* dst, size_t size) {
+    char* str = (char*)dst;
+
+    int start = 0;
+    int end = size;
+
+    while (start < end) {
+        char temp = str[start];
+        str[start] = str[end];
+        str[end] = temp;
+
+        start++;
+        end--;
+    }
+
+    return dst;
+}
+
+int is_alpha(char c) {
+    return (c >= 'a' && c <= 'z') ||
+            (c >= 'A' && c <= 'Z');
+}
+
+int is_numeric(char c) {
+    return (c >= '0' && c <= '9');
+}

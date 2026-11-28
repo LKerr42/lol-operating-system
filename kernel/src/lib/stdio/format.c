@@ -11,6 +11,7 @@ int vformat(output_format_t *out_format, size_t size, const char *format, va_lis
             format++;
 
             char buffer[32];
+            int fl_precision = 0, i = 0;
 
             switch (*format) {
                 case '%':
@@ -72,7 +73,34 @@ int vformat(output_format_t *out_format, size_t size, const char *format, va_lis
                         output_string(out_format, buffer);
                     break;
                 case 'f':
-                    //TODO: add a float to string func
+                    float_to_string(
+                        buffer,
+                        va_arg(ap, double),
+                        3
+                    );
+
+                    written +=
+                        output_string(out_format, buffer);
+                    break;
+                case '.': 
+                    //skip '.'
+                    format++;
+
+                    while (is_numeric(*format)) {
+                        fl_precision *= (10 * i);
+                        fl_precision += *format + '0';
+                        i++;
+                        format++;
+                    }
+
+                    float_to_string(
+                        buffer,
+                        va_arg(ap, double),
+                        fl_precision
+                    );
+
+                    written +=
+                        output_string(out_format, buffer);
                     break;
                 case 'c':
                     written +=

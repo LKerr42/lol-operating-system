@@ -60,18 +60,51 @@ size_t int_to_string(
     //null terminate
     buffer[size] = '\0';
 
-    //reverse the string
-    int start = 0;
-    int end = size - 1; //ignore null terminator
-
-    while (start < end) {
-        char temp = buffer[start];
-        buffer[start] = buffer[end];
-        buffer[end] = temp;
-
-        start++;
-        end--;
-    }
+    strrev(buffer, size-1); //reverse, ignore null
 
     return size;
+}
+
+size_t float_to_string(
+    char *buffer,
+    float value,
+    int precision
+) {
+    size_t i = 0;
+
+    if (value < 0.0f) {
+        buffer[i++] = '-';
+        value = -value;
+    }
+
+    unsigned int int_part = (unsigned int)value;
+    float frac_part = value - (float)int_part;
+
+    i += uitostr(
+            (char*)(buffer+i),
+            int_part,
+            10,
+            0
+        );
+
+    strrev(buffer, i-1); //reverse
+    
+    if (precision > 0) {
+        buffer[i] = '.';
+        i++;
+
+        for (int p = 0; p < precision; p++) {
+            frac_part *= 10.0f;
+            int digit = (int)frac_part;
+
+            buffer[i] = lowercase_digits[digit];
+            i++;
+            frac_part -= digit;
+        }
+    }
+
+    // null terminate
+    buffer[i] = '\0';
+
+    return i;
 }
